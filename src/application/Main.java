@@ -72,7 +72,7 @@ public class Main {
 		if (loginUser != null && loginUser.getRole().equals("admin")) {
 			int choice = Integer.parseInt(JOptionPane.showInputDialog("Olá, " + loginUser.getUsername() 
 			+ "\n\nConfigurações da loja: "
-			+ "\n1 - Adcionar produtos"
+			+ "\n1 - Adicionar produtos"
 			+ "\n2 - Listar usuários"
 			+ "\n3 - Listar pedidos"
 			+ "\n4 - Voltar\n\n"));

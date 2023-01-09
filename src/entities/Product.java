@@ -1,5 +1,10 @@
 package entities;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.swing.JOptionPane;
+
 public class Product {
 	
 	private Integer id;
@@ -7,6 +12,8 @@ public class Product {
 	private Double price;
 	private Integer quantity = 0;
 	public Boolean inStock = false;
+	
+	private Set<Category> categories = new HashSet<>();
 	
 	public Product(Integer id, String name, Double price, Integer quantity) {
 		this.id = id;
@@ -41,6 +48,15 @@ public class Product {
 
 	public Integer getQuantity() {
 		return quantity;
+	}
+
+	public Set<Category> getCategories() {
+		return categories;
+	}
+	
+	public void addCategory(Category category) {
+		categories.add(category);
+		JOptionPane.showMessageDialog(null, "Produto adicionado a categoria com sucesso!");
 	}
 
 	public Integer increaseStock(Integer quantity) {
