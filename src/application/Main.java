@@ -19,7 +19,7 @@ public class Main {
 	
 	public static void menu() {
 		
-		int choice = Integer.parseInt(JOptionPane.showInputDialog("--- Olá seja bem-vindo à JDKClean! ---" 
+		int choice = Integer.parseInt(JOptionPane.showInputDialog("----------   Olá seja bem-vindo à JDKClean!   ----------" 
 				+ "\n\nEscolha uma opção: "
 				+ "\n1 - Catálogo"
 				+ "\n2 - Conta\n\n"));
@@ -53,7 +53,8 @@ public class Main {
 					+ "\n\nConfigurações de conta: "
 					+ "\n1 - Adicionar endereço"
 					+ "\n2 - Seus dados"
-					+ "\n3 - Pedidos\n\n"));
+					+ "\n3 - Pedidos"
+					+ "\n4 - Voltar\n\n"));
 			
 			switch (choice) {
 				case 1:
@@ -62,6 +63,13 @@ public class Main {
 					break;
 				case 2:
 					loginUser.showRegistry();
+					break;
+				case 3:
+					loginUser.listOrders();
+					break;
+				case 4: 
+					menu();
+					break;
 			}
 		}
 		
@@ -74,7 +82,7 @@ public class Main {
 			+ "\n\nConfigurações da loja: "
 			+ "\n1 - Adicionar produtos"
 			+ "\n2 - Listar usuários"
-			+ "\n3 - Listar pedidos"
+			+ "\n3 - Pedidos"
 			+ "\n4 - Voltar\n\n"));
 	
 			switch (choice) {
@@ -85,6 +93,9 @@ public class Main {
 				case 2: 
 					store.listUsers();
 					dashboardAdmin();
+					break;
+				case 3:
+					loginUser.listOrders();
 					break;
 				case 4:
 					menu();

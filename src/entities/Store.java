@@ -7,11 +7,15 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import application.Main;
+
 public class Store {
 	
 	private Integer id = 1; 
 	private String name = "JDKClean";
 	private String cnpj = "010101010";
+
+	private Main main = new Main();
 	
 	private Address address;
 	
@@ -56,11 +60,67 @@ public class Store {
 		for (Product prod : products) {
 			catalogProducts += prod.getId() + "               " + prod.getName() + "            " + prod.getPrice() + "       " + prod.getQuantity();
 		}
+	
+		catalogProducts += "\n0 - Voltar";
 		
-		int choice = Integer.parseInt(JOptionPane.showInputDialog(catalogProducts+ "\n\nEscolha uma opção: "));
+		int choice = Integer.parseInt(JOptionPane.showInputDialog(catalogProducts+ "\n\nSelecione o produto pelo seu id: "));
+		
+		if (choice == 0) {
+			main.menu();
+		}
+		
+		pageProduct(choice);
 		
 	}
-
+	
+	public void pageProduct(Integer id) {
+		Product product = selectProductById(id);
+		
+		String infoProduct = "Nome do produto: " + product.getName();
+		infoProduct += "\nPreço: R$ " + product.getPrice();
+		infoProduct += "\nQuantidade: " + product.getQuantity();
+		
+		infoProduct += "\n\n1 - Adicionar ao pedido";
+		infoProduct += "\n2 - Voltar";
+		
+		int choice = Integer.parseInt(JOptionPane.showInputDialog(infoProduct + "\n\nSelecione uma opção: "));
+		
+		switch (choice) {
+			case 1:
+				//JOptionPane.showMessageDialog(null, "Produto adicionado ao pedido!");
+				addProductInOrder(product);
+				catalog();
+				break;
+			case 2:
+				catalog();
+				break;
+		}
+	}
+	
+	public void addProductInOrder(Product product) {
+		
+		if (main.loginUser != null) {
+			Order order = new Order(null, null, main.loginUser);
+			order.addProducts(product);
+			main.loginUser.addOrder(order);
+		}
+		else {
+			JOptionPane.showMessageDialog(null, "Faça login primeiro!!");
+		}
+		
+	}
+	
+	public Product selectProductById(Integer id) {
+		Product selectedProduct;
+		for (Product prod : products) {
+			if (prod.getId().equals(id)) {
+				selectedProduct = prod;
+				return selectedProduct;
+			}
+		}
+		return null;
+	}
+	
 	public void registry() {
 		
 		User user;
@@ -144,4 +204,5 @@ public class Store {
 		
 		int choice = Integer.parseInt(JOptionPane.showInputDialog(listUsers+ "\n\nEscolha uma opção: "));
 	}
+
 }

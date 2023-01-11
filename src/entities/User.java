@@ -81,6 +81,24 @@ public class User {
 		return orders;
 	}
 	
+	public void addOrder(Order order) {
+		orders.add(order);
+	}
+	
+	public void listOrders() {
+		
+		String listOrders = "----------     Lista de pedidos     ----------\n\n";
+		
+		listOrders += "ID          Aberta          Valor Total\n";
+		
+		for (Order order : orders) {
+			listOrders += order;
+		}
+		
+		JOptionPane.showInputDialog(listOrders + "\n\nSelecione o pedido por ID");
+				
+	}
+	
 	public void addAddress() {
 		
 		String zipCode = JOptionPane.showInputDialog("Cep: ");

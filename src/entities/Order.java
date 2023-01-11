@@ -14,9 +14,6 @@ public class Order {
 	private User user;
 	
 	private List<Product> products = new ArrayList<>();
-
-	public Order() {
-	}
 	
 	public Order(Integer id, Double totalValue, User user) {
 		this.id = id;
@@ -52,10 +49,15 @@ public class Order {
 		return orderOpen;
 	}
 
+	@Override
+	public String toString() {
+		return id + "          " +  orderOpen + "             R$ " + totalValue;
+	}
+
 	public void addProducts(Product product) {
 		products.add(product);
 		calcTotalValue();
-		JOptionPane.showConfirmDialog(null, "Produto adicionado ao pedido.");
+		JOptionPane.showMessageDialog(null, "Produto adicionado ao pedido.");
 	}
 	
 	public void removeProduct(Integer id) {
