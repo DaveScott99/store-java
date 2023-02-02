@@ -6,8 +6,8 @@ public class Admin extends User {
 	private Boolean changeCategory;
 	private Boolean changeUsers;
 	
-	public Admin(Integer id, String username, String email, String password, String role, Address address) {
-		super(id, username, email, password, role, address);
+	public Admin(String username, String email, String password, String role, Address address) {
+		super(username, email, password, role, address);
 		this.changeStock = true;
 		this.changeCategory = true;
 		this.changeUsers = true;

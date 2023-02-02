@@ -15,8 +15,10 @@ public class Product {
 	
 	private Set<Category> categories = new HashSet<>();
 	
-	public Product(Integer id, String name, Double price, Integer quantity) {
-		this.id = id;
+	public Product() {
+	}
+	
+	public Product(String name, Double price, Integer quantity) {
 		this.name = name;
 		this.price = price;
 		this.quantity = increaseStock(quantity);
@@ -49,6 +51,10 @@ public class Product {
 	public Integer getQuantity() {
 		return quantity;
 	}
+	
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
 
 	public Set<Category> getCategories() {
 		return categories;
@@ -73,12 +79,6 @@ public class Product {
 			inStock = false;
 			System.out.println("Produto esgotado!");
 		}
-	}
-
-	@Override
-	public String toString() {
-		return "Product [id=" + id + ", name=" + name + ", price=" + price + ", quantity=" + quantity + ", inStock="
-				+ inStock + "]";
 	}
 	
 }

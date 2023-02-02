@@ -3,8 +3,6 @@ package entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 public class Order {
 	
 	private Integer id;
@@ -48,26 +46,20 @@ public class Order {
 	public Boolean getOrderOpen() {
 		return orderOpen;
 	}
-
-	@Override
-	public String toString() {
-		return id + "          " +  orderOpen + "             R$ " + totalValue;
-	}
-
-	public void addProducts(Product product) {
+	
+	public void addProduct(Product product) {
 		products.add(product);
 		calcTotalValue();
-		JOptionPane.showMessageDialog(null, "Produto adicionado ao pedido.");
 	}
 	
 	public void removeProduct(Integer id) {
 		for (Product prod : products) {
 			if (prod.getId().equals(id)) {
 				products.remove(id);
-				JOptionPane.showConfirmDialog(null, "Produto removido com sucesso!");
+				System.out.println("Produto removido");
 			}
 			else {
-				JOptionPane.showConfirmDialog(null, "Produto não encontrado!");
+				System.out.println("Produto não encontrado");
 			}
 		}
 	}
@@ -77,9 +69,14 @@ public class Order {
 	}
 	
 	public void calcTotalValue() {
-		for (Product prod : products) {
+		/*
+		for (Product prod : getProducts()) {
 			totalValue =+ prod.getPrice();
 		}
+		*/
+		
+		totalValue = getProducts().stream().mapToDouble(Product::getPrice).sum();
+		
 	}
 	
 }

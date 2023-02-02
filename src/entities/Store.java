@@ -5,23 +5,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JOptionPane;
-
 import application.Main;
+import services.ProductService;
 
 public class Store {
-	
-	private Integer id = 1; 
+
+	private Integer id = 1;
 	private String name = "JDKClean";
 	private String cnpj = "010101010";
 
-	private Main main = new Main();
-	
 	private Address address;
+
+	public Set<User> users = new HashSet<>();
+
+	private List<Product> products = new ArrayList<>();
 	
-	public static Set<User> users = new HashSet<>();
-	
-	public static List<Product> products = new ArrayList<>();
+	private ProductService productService;
 
 	public Integer getId() {
 		return id;
@@ -42,167 +41,213 @@ public class Store {
 	public void setAddress(Address address) {
 		this.address = address;
 	}
-	
-	public static Set<User> getUsers() {
+
+	public Set<User> getUsers() {
 		return users;
 	}
 
-	public static List<Product> getProducts() {
+	public List<Product> getProducts() {
 		return products;
 	}
-	
+
+	public void entryStore() {
+		System.out.println("**************************************************");
+		System.out.println("*               Bem vindo à JDKClean             *");
+	}
+
+	public void header() {
+		System.out.println("**************************************************");
+		System.out.println("*             DIGITE OPERAÇÃO DESEJADA           *");
+
+	}
+
 	public void catalog() {
 		
-		String catalogProducts = "---------- Catálogo de produtos ----------\n\n";
+		Integer choice = 1;
 		
-		catalogProducts += "ID           NOME           R$           QTD\n";
+		productService.findAll();
 		
-		for (Product prod : products) {
-			catalogProducts += prod.getId() + "               " + prod.getName() + "            " + prod.getPrice() + "       " + prod.getQuantity();
-		}
-	
-		catalogProducts += "\n0 - Voltar";
+		Order order = new Order(Main.generateId(), null, Main.loginUser);
 		
-		int choice = Integer.parseInt(JOptionPane.showInputDialog(catalogProducts+ "\n\nSelecione o produto pelo seu id: "));
+		while (choice != 0) {
+			System.out.println("**************************************************");
+			System.out.println("*              ESCOLHA SEUS PRODUTOS             *");
+			System.out.println();
+
+			System.out.println("ID               NOME");
+
+			products.forEach(x -> {
+				System.out.println(x.getId() + "         " + x.getName());
+			});
+			
+			System.out.println();
+			System.out.println("*              0 - Finalizar Compra              *");
+			System.out.println("**************************************************");
+			System.out.print("-> ");
+			
+			choice = Main.sc.nextInt();
+			
+			Product product = productService.findProductById(choice);
+			
+			if (product != null) {
+				order.addProduct(product);
+			}
+		}				
+		System.out.println();		
 		
-		if (choice == 0) {
-			main.menu();
-		}
+		showItensInCart(order);
 		
-		pageProduct(choice);
+		order.closeOrder();
 		
+		Main.loginUser.addOrder(order);
+		
+		newOrder();
 	}
 	
-	public void pageProduct(Integer id) {
-		Product product = selectProductById(id);
+	public void showItensInCart(Order order) {
+		System.out.println("**************************************************");
+		System.out.println("*                 RESUMO DO PEDIDO               *");
 		
-		String infoProduct = "Nome do produto: " + product.getName();
-		infoProduct += "\nPreço: R$ " + product.getPrice();
-		infoProduct += "\nQuantidade: " + product.getQuantity();
+		order.getProducts().stream().forEach(x -> {
+			if (x != null) {
+				System.out.println(x.getId() + " - " + x.getName() + "  R$" + x.getPrice());				
+			}
+		});
 		
-		infoProduct += "\n\n1 - Adicionar ao pedido";
-		infoProduct += "\n2 - Voltar";
+		System.out.println("Total: R$ " + order.getTotalValue());
+		System.out.println("**************************************************");
+	
+	}
+	
+	public void newOrder() {
+		System.out.println("Deseja realizar uma nova compra? (S - Sim / N - Não) ");
+		System.out.print("-> ");
 		
-		int choice = Integer.parseInt(JOptionPane.showInputDialog(infoProduct + "\n\nSelecione uma opção: "));
+		char choice = Main.sc.next().toUpperCase().charAt(0);
 		
 		switch (choice) {
-			case 1:
-				//JOptionPane.showMessageDialog(null, "Produto adicionado ao pedido!");
-				addProductInOrder(product);
-				catalog();
-				break;
-			case 2:
-				catalog();
-				break;
-		}
-	}
-	
-	public void addProductInOrder(Product product) {
-		
-		if (main.loginUser != null) {
-			Order order = new Order(null, null, main.loginUser);
-			order.addProducts(product);
-			main.loginUser.addOrder(order);
-		}
-		else {
-			JOptionPane.showMessageDialog(null, "Faça login primeiro!!");
+		case 'S':
+			catalog();
+			break;
+		case 'N':
+			Main.menuEntry();
+			break;
+		default:
+			System.out.println("Opção inválida.");
+			newOrder();
+			break;
 		}
 		
 	}
-	
-	public Product selectProductById(Integer id) {
-		Product selectedProduct;
-		for (Product prod : products) {
-			if (prod.getId().equals(id)) {
-				selectedProduct = prod;
-				return selectedProduct;
-			}
-		}
-		return null;
-	}
-	
+
 	public void registry() {
 		
+		System.out.println("**************************************************");
+		System.out.println("*                    REGISTRO                    *");
+
 		User user;
 		
-		Integer id = Integer.parseInt(JOptionPane.showInputDialog("ID: "));
-		String username = JOptionPane.showInputDialog("Username: ");
-		String email = JOptionPane.showInputDialog("Email: ");
-		String password = JOptionPane.showInputDialog("Senha: ");
-		String role = JOptionPane.showInputDialog("Role: ");
+		System.out.print("NOME DE USUÁRIO: ");
+		String username = Main.sc.next();
 		
-		if (role == "admin") {
-			user = new Admin(id, username, email, password, role, null);
-			users.add(user);
+		System.out.print("EMAIL: ");
+		String email = Main.sc.next();
+		
+		System.out.print("SENHA: ");
+		String password = Main.sc.next();
+		
+	
+		if (username == null) {
+			System.out.println("ERRO: Username não pode estar vazio!");
+			registry();
+			if (email == null) {
+				System.out.println("ERRO: Email não pode estar vazio!");
+				registry();
+				if (password == null) {
+					System.out.println("ERRO Senha não pode estar vazio!");
+					registry();
+				}
+			}
 		}
 		else {
-			user = new User(id, username, email, password, role, null);
+			user = new User(username, email, password, "client", null);
 			users.add(user);
-		}		
-		JOptionPane.showMessageDialog(null, "Usuário registrado com sucesso!");
-	}
+			Main.loginUser = user;
+		}
 	
+		System.out.println("USUÁRIO REGISTRADO COM SUCESSO!");
+	}
+
 	public User login() {
 		
-		String email = JOptionPane.showInputDialog("Email: ");
-		String password = JOptionPane.showInputDialog("Senha: ");
+		System.out.println("**************************************************");
+		System.out.println("*                     LOGIN                      *");
+
+		System.out.print("EMAIL: ");
+		String email = Main.sc.next();
 		
-		for(User user : users) {
-			if (user.getEmail().equals(email) && user.getPassword().equals(password)) {
-				JOptionPane.showMessageDialog(null, "Login realizado com sucesso!");
+		System.out.print("SENHA: ");
+		String password = Main.sc.next();
+		
+		for (User user : users) {
+			if (user.getEmail().equals(email) && user.getPassword().equals(password)) {	
 				return user;
-			}
-			else {
-				JOptionPane.showMessageDialog(null, "ERRO: Email ou senha incorretos!");
 			}
 		}
 		
 		return null;
 		
+		/*
+		User user = users.stream().filter(x ->  x.getEmail().equals(email)).filter(z -> z.getPassword().equals(password)).collect(Collectors.toList()).get(0);
+		
+		
+		*/
 	}
-	
+
 	public void addProducts() {
 		
-		Integer id = Integer.parseInt(JOptionPane.showInputDialog("ID: "));
-		String name = JOptionPane.showInputDialog("Nome: ");
-		Double price = Double.parseDouble(JOptionPane.showInputDialog("Preço: "));
-		Integer quantity = Integer.parseInt(JOptionPane.showInputDialog("Quantidade: "));
+		System.out.println("**************************************************");
+		System.out.println("*                ADICIONAR PRODUTO               *");
+
+		System.out.print("NOME DO PRODUTO: ");
+		String name = Main.sc.next();
 		
-		Product product = new Product(id, name, price, quantity);
+		System.out.print("PREÇO: ");
+		Double price = Main.sc.nextDouble();
 		
-		products.add(product);
-		
-	}
+		System.out.print("QUANTIDADE: ");
+		Integer quantity = Main.sc.nextInt();
 	
-	public void addAddress() {
-		
-		String zipCode = JOptionPane.showInputDialog("Cep: ");
-		String street = JOptionPane.showInputDialog("Rua: ");
-		Integer number = Integer.parseInt(JOptionPane.showInputDialog("Número: "));
-		String district = JOptionPane.showInputDialog("Bairro: ");
-		String city = JOptionPane.showInputDialog("Cidade: ");
-		
-		Address address = new Address(zipCode, street, district, city, number);
-		
-		setAddress(address);
-		
-		JOptionPane.showInputDialog("Endereço cadastrado com sucesso!");
+		Product product = new Product(name, price, quantity);
+
+		productService.addProduct(product);
 	}
-	
+
 	public void listUsers() {
-		String listUsers = "---------- Usuários cadastrados ----------\n\n";
 		
-		listUsers += "ID           NOME           EMAIL           SENHA          ROLE\n";
+		System.out.println("**************************************************");
+		System.out.println("*              USUÁRIOS CADASTRADOS              *");
 		
-		for (User user : users) {
-			listUsers += user.getId() + "               " 
-						+ user.getUsername() + "            " 
-						+ user.getEmail() + "       " 
-						+ user.getPassword() + "       " 
-						+ user.getRole();
+		System.out.println("ID           NOME           EMAIL           SENHA          ROLE");
+
+		users.forEach(x -> {
+			System.out.println(x.getId() + "               " + 
+							   x.getUsername() + "               " + 
+							   x.getEmail() + "               " + 
+							   x.getPassword() + "               " + 
+							   x.getRole());
+		});
+		
+		System.out.println("*                  1 - Voltar                    *");
+		System.out.println("**************************************************");
+		System.out.print("-> ");
+		
+		Integer choice = Main.sc.nextInt();
+		
+		if (choice == 1 ) {
+			Main.dashboardAdmin();
 		}
 		
-		int choice = Integer.parseInt(JOptionPane.showInputDialog(listUsers+ "\n\nEscolha uma opção: "));
 	}
 
 }

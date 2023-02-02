@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import application.Main;
+
 public class User {
 
 	private Integer id;
@@ -15,13 +17,15 @@ public class User {
 	
 	private Address address;
 	
+	private List<Product> cart = new ArrayList<>();
+	
 	private List<Order> orders = new ArrayList<>();
 	
 	public User() {
 	}
 	
-	public User(Integer id, String username, String email ,String password, String role, Address address) {
-		this.id = id;
+	public User(String username, String email ,String password, String role, Address address) {
+		this.id = Main.generateId();
 		this.username = username;
 		this.email = email;
 		this.password = password;
@@ -85,18 +89,43 @@ public class User {
 		orders.add(order);
 	}
 	
+	public List<Product> getCart() {
+		return cart;
+	}
+	
+	public void addItemInCart(Product product) {
+		cart.add(product);
+	}
+
 	public void listOrders() {
 		
-		String listOrders = "----------     Lista de pedidos     ----------\n\n";
+		Main.cleanScreen();
+		System.out.println("**************************************************");
+		System.out.println("*                    PEDIDOS                     *");
 		
-		listOrders += "ID          Aberta          Valor Total\n";
+		getOrders().forEach(x -> {
+			System.out.println("ID: " + x.getId());
+			System.out.println("Aberta: " + x.getOrderOpen());
+			System.out.println("Valor Total: " + x.getTotalValue());
+			System.out.println("**************************************************");
+		});
+	
+		System.out.println("*                1 - Voltar                      *");
+		System.out.println("**************************************************");
+		System.out.print("-> ");
 		
-		for (Order order : orders) {
-			listOrders += order;
+		Integer choice = Main.sc.nextInt();
+		
+		switch(choice) {
+			case 1:
+				Main.dashboardClient();
+				break;
+			default:
+				System.out.println("Opção inválida!");
+				listOrders();
+				break;
 		}
-		
-		JOptionPane.showInputDialog(listOrders + "\n\nSelecione o pedido por ID");
-				
+
 	}
 	
 	public void addAddress() {
@@ -116,42 +145,58 @@ public class User {
 	
 	public void showRegistry() {
 		
-		String data = "Seus dados";
+		System.out.println("**************************************************");
+		System.out.println("*                   SEUS DADOS                   *");
 		
-		data += "\n\nUsername: " + getUsername();
-		data += "\nEmail: " + getEmail();
-		data += "\nSenha: " + getPassword();
+		System.out.println("NOME DE USUÁRIO: " + getUsername());
+		System.out.println("EMAIL: " + getEmail());
+		System.out.println("SENHA: " + getPassword());
 		
-		int option = Integer.parseInt(JOptionPane.showInputDialog(data+ "\n\n1 - Alterar username" + "\n2 - Alterar email" + "\n3 - Alterar senha\n"));
+		System.out.println("*                1 - Alterar Username            *");
+		System.out.println("*                2 - Alterar Email               *");
+		System.out.println("*                3 - Alterar Senha               *");
+		System.out.println("*                4 - Voltar                      *");
+		System.out.println("**************************************************");
+		System.out.print("-> ");
 		
-		changeRegistry(option);
+		int choice = Main.sc.nextInt();
+		
+		changeRegistry(choice);
 	}
 
 	private void changeRegistry(Integer option) {
 
 		switch (option) {
 			case 1:
-				String username = JOptionPane.showInputDialog("Digite seu novo username: ");
+				System.out.println("Digite seu novo username: ");
+				System.out.print("-> ");
+				String username = Main.sc.next();
 				setUsername(username);
 				showRegistry();
 				break;
 			case 2:
-				String email = JOptionPane.showInputDialog("Digite seu novo email: ");
+				System.out.println("Digite seu novo email: ");
+				System.out.print("-> ");
+				String email = Main.sc.next();
 				setEmail(email);
 				showRegistry();
 				break;
 			case 3:
-				String password = JOptionPane.showInputDialog("Digite sua nova senha: ");
+				System.out.println("Digite sua nova senha: ");
+				System.out.print("-> ");
+				String password = Main.sc.next();
 				setPassword(password);
 				showRegistry();
 				break;
+			case 4: 
+				Main.dashboardClient();
+				break;
 			default:
-				JOptionPane.showMessageDialog(null, "Opção inválida!");
+				System.out.println("Opção inválida!");
 				showRegistry();
 				break;				
 		}
 		
 	}
-	
 	
 }
